@@ -17,8 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import android.content.Context;
-import android.content.IntentFilter;
 
 import ro.pub.cs.systems.eim.colocviu_api.AutocompleteBroadcast;
 import ro.pub.cs.systems.eim.colocviu_api.AutocompleteResult;
@@ -51,7 +49,9 @@ public class Colocviu_api_MainActivity extends AppCompatActivity {
             ui.append(joined == null ? "(nimic)" : joined);
             ui.append("\n\nA 3-a intrare: ").append(third == null ? "(nu există)" : third);
 
-            resultTextView.setText(ui.toString());
+           resultTextView.setText(ui.toString());
+            //resultTextView.setText(third == null ? "(nu există)" : third);
+
         }
     };
 
@@ -121,6 +121,7 @@ public class Colocviu_api_MainActivity extends AppCompatActivity {
 
                 // c) Broadcast + afișare în UI (via receiver)
                 Intent b = new Intent(AutocompleteBroadcast.ACTION_AUTOCOMPLETE_READY);
+                b.setPackage(getPackageName()); // ✅ important
                 b.putExtra(AutocompleteBroadcast.EXTRA_PREFIX, prefix);
                 b.putExtra(AutocompleteBroadcast.EXTRA_RAW, raw);
                 b.putExtra(AutocompleteBroadcast.EXTRA_THIRD, third);
@@ -129,10 +130,14 @@ public class Colocviu_api_MainActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 Log.e(TAG, "Error", e);
+
                 Intent b = new Intent(AutocompleteBroadcast.ACTION_AUTOCOMPLETE_READY);
+                b.setPackage(getPackageName()); // ✅ pune și aici
+
                 b.putExtra(AutocompleteBroadcast.EXTRA_PREFIX, prefix);
                 b.putExtra(AutocompleteBroadcast.EXTRA_SUGGESTIONS_JOINED, "Eroare: " + e.getMessage());
                 b.putExtra(AutocompleteBroadcast.EXTRA_THIRD, (String) null);
+
                 sendBroadcast(b);
             }
         });
